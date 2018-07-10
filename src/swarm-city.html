@@ -1,0 +1,210 @@
+<link rel="import" href="../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../bower_components/app-route/app-location.html">
+<link rel="import" href="../bower_components/app-route/app-route.html">
+<link rel="import" href="../bower_components/faffys-animated-pages/faffys-animated-pages.html">
+<link rel="import" href="../bower_components/paper-styles/typography.html">
+<link rel="import" href="../bower_components/iron-a11y-keys/iron-a11y-keys.html">
+<link rel="import" href="../bower_components/iron-pages/iron-pages.html">
+<link rel="import" href="redux-state.html">
+<link rel="import" href="sc-animations.html">
+<link rel="import" href="data/socket-redux.html">
+<link rel="import" href="displays/display-get-hashtag.html">
+
+<link rel="lazy-import" href="pages/page-welcome.html">
+<link rel="lazy-import" href="pages/page-view404.html">
+
+<dom-module id="swarm-city">
+  <template>
+    <style>
+      :host {
+        display: block;
+        padding: 0;
+        margin: 0;
+      }
+    </style>
+    <socket-redux></socket-redux>
+    <iron-pages role="main" selected="[[page]]" attr-for-selected="name" selected-attribute="visible" fallback-selection="404">
+      <new-request name="new-request" route="[[subroute]]"></new-request>
+    </iron-pages>
+    <app-location route="{{route}}" url-space-regex="^[[rootPath]]"></app-location>
+    <display-get-hashtag route="[[route]]"></display-get-hashtag>
+    <iron-a11y-keys id="a11y" keys="esc" on-keys-pressed="_onEscape"></iron-a11y-keys>
+    <app-route route="{{route}}" pattern="[[rootPath]]:page" data="{{routeData}}" tail="{{subroute}}"></app-route>
+    <sc-animations animations-array="{{animationsArray}}"></sc-animations>
+    <faffys-animated-pages page="[[page]]" route="{{route}}" route-exit="{{routeExit}}" route-entry="{{routeEntry}}" animations="{{animations}}">
+      <page-welcome id="welcome" route-exit="{{routeExit}}" route-entry="{{routeEntry}}"></page-welcome>
+      <page-view404 id="view404" route-exit="{{routeExit}}" route-entry="{{routeEntry}}"></page-view404>
+    </faffys-animated-pages>
+  </template>
+
+  </template>
+
+  <script>
+    class SwarmCity extends new ReduxMixin(Polymer.Element) {
+      static get is() {return 'swarm-city';}
+      static get properties() {
+        return {
+          page: {
+            type: String,
+            reflectToAttribute: true,
+            observer: '_pageChanged',
+          },
+          location: {
+            type: String,
+            statePath: 'location',
+          },
+          hashtagdata: {
+            type: Array,
+            observer: '_hashtagChanged',
+          },
+          hashtags: {
+            type: Array,
+          },
+          route: {
+            type: Object,
+            observer: '_routeChange',
+          },
+          routeExit: {
+            type: Array,
+            observer: '_loadAnimations',
+          },
+          /**
+          * PublicKey represents the user's public key
+          * @type {String}
+          */
+          publicKey: {
+            type: String,
+            statePath: 'publicKey',
+          },
+          /**
+          * routeEntry changes the exact moment pages change when routing
+          * @type {Array}
+          */
+          routeEntry: {
+            type: Array,
+            observer: '_toTop',
+          },
+          animations: {
+            type: Object,
+            notify: true,
+          },
+          animationsArray: {
+            Type: Array,
+          },
+          routeData: Object,
+          subroute: String,
+          rootPath: String,
+        };
+      }
+
+      /**
+        * Redux action for sertting language
+        * @param {hashtags} hashtags
+        */
+
+      static get actions() {
+        return Object.assign({
+          LOCATION: function(location) {
+            return {
+              type: 'LOCATION',
+              location: location,
+            };
+          },
+        });
+      }
+
+      static get observers() {
+        return [
+          '_routePageChanged(routeData.page)',
+        ];
+      }
+
+      connectedCallback() {
+        super.connectedCallback();
+        this.$.a11y.target = document.querySelector('body');
+
+        // disable double tap zoom
+        let lastTouchEnd = 0;
+        document.addEventListener('touchend', function(event) {
+          let now = (new Date()).getTime();
+          if (now - lastTouchEnd <= 300) {
+            event.preventDefault();
+          }
+          lastTouchEnd = now;
+        }, false);
+      }
+
+      /**
+      * Routs the user back to previous page when pressed Escape
+      */
+      _onEscape() {
+        window.history.back();
+      }
+
+      _routePageChanged(page) {
+        this.page = page || 'welcome';
+      }
+      _pageChanged(page) {
+        this.dispatch('LOCATION', this.route.path);
+        let resolvedPageUrl = this.resolveUrl('pages/page-' + page + '.html');
+        Polymer.importHref(
+          resolvedPageUrl,
+          null,
+          this._showPage404.bind(this),
+          true);
+      }
+      _showPage404() {
+        this.page = 'view404';
+      }
+
+      _toTop() {
+        window.scrollTo(0, 0);
+      }
+
+      _routeChange() {
+        this._ifAccountAvoidEntryFlow();
+      }
+
+      _ifAccountAvoidEntryFlow() {
+        let entryFlowPages = [
+          'new-here',
+          'choose-avatar-and-username',
+          'choose-password',
+          'password-warning',
+          'my-keys',
+        ];
+        if (entryFlowPages.includes(this.routeExit[1])) {
+          if (this.routeExit[0] != this.routeExit[1]) {
+            if (entryFlowPages.indexOf(this.routeExit[1])
+              - entryFlowPages.indexOf(this.routeExit[0]) == 1) {
+              if (this.publicKey) {
+                this.set('route.path', 'hashtag-list');
+              }
+            }
+          } else {
+            if (this.publicKey) {
+              this.set('route.path', 'hashtag-list');
+            }
+          }
+        }
+      }
+
+      _loadAnimations() {
+        if (this.routeExit[0] != this.routeExit[1]) {
+          let transitionFound = false;
+          for (let i = 1; i < this.animationsArray.length; i++) {
+            if (this.animationsArray[i].from == this.routeExit[0]
+              && this.animationsArray[i].to == this.routeExit[1]) {
+              this.animations = this.animationsArray[i];
+              transitionFound = true;
+            }
+          }
+          if (!transitionFound) {
+            this.animations = this.animationsArray[0];
+          }
+        }
+      }
+    }
+    window.customElements.define(SwarmCity.is, SwarmCity);
+  </script>
+</dom-module>
