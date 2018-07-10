@@ -10,7 +10,9 @@
   "sources": [
     "images/**/*",
     "src/**/*",
-    "_redirects"
+    "_redirects",
+    "404.html",
+    "socket.io.js"
   ],
   "extraDependencies": [
     "bower_components/webcomponentsjs/*.js",
