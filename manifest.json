@@ -4,7 +4,7 @@
   "short_name": "Swarm City",
   "package_name": "swarmcity",
   "description": "Swarm City",
-  "start_url": "/",
+  "start_url": "/app-shell/",
   "display": "standalone",
   "background_color": "#F4F4F4",
   "theme_color": "#EFD96F",
