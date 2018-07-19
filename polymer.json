@@ -12,7 +12,8 @@
     "src/**/*",
     "_redirects",
     "404.html",
-    "socket.io.js"
+    "socket.io.js",
+    "CNAME"
   ],
   "extraDependencies": [
     "bower_components/webcomponentsjs/*.js",
