@@ -5,11 +5,13 @@ This code may only be used under the license found at https://github.com/swarmci
 -->
 <link rel="import" href="../../bower_components/polymer/polymer-element.html">
 <link rel="import" href="../../bower_components/app-localize-behavior/app-localize-behavior.html">
+<link rel="import" href="../../bower_components/iron-media-query/iron-media-query.html">
+<link rel="import" href="../redux-state.html">
 <!--
 
 Example:
 ```
-<display-hashtagadd-btn></display-hashtagadd-btn>
+<display-deal-btn></display-deal-btn>
 ```
 
 ### Styling
@@ -20,43 +22,55 @@ The following custom properties and mixins are available for styling:
 
 | Custom property | Description | Default |
 | --- | --- | --- |
-| `--display-hashtagadd-btn` | Mixin applied to the deal button | `{}` |
+| `--display-deal-btn` | Mixin applied to the deal button | `{}` |
 -->
-<dom-module id="display-hashtagadd-btn">
+<dom-module id="display-deal-btn">
     <template>
         <style include="shared-styles">
             :host {
                 display: block;
             }
 
-            .hashtaggadd {
+            .button {
                 @apply --icon-button-big;
                 cursor: pointer;
+                box-shadow: 0px 2px 4px -1px rgba(0, 0, 0, 0.35);
+                -webkit-box-shadow: 0px 2px 4px -1px rgba(0, 0, 0, 0.35);
+                -moz-box-shadow: 0px 2px 4px -1px rgba(0, 0, 0, 0.35);
+                -o-box-shadow: 0px 2px 4px -1px rgba(0, 0, 0, 0.35);
             }
 
-            .hashtaggadd:active {
+            .container[wide-layout] .button {
+                box-shadow: 0px 1px 2px -1px rgba(0, 0, 0, 0.5);
+                -webkit-box-shadow: 0px 1px 2px -1px rgba(0, 0, 0, 0.5);
+                -moz-box-shadow: 0px 1px 2px -1px rgba(0, 0, 0, 0.5);
+                -o-box-shadow: 0px 1px 2px -1px rgba(0, 0, 0, 0.5);
+            }
+
+            .button:active {
                 @apply --button-active;
             }
 
             .icon {
-                @apply --plus-grey4-normal;
+                @apply --plus-blue-normal;
             }
-
         </style>
-
-        <div tabindex="5" class="hashtaggadd" on-tap="_newHashtag" on-KeyPress="_newHashtag">
-            <div class="icon"></div>
+        <iron-media-query query="(min-width: 600px)" query-matches="{{wide}}"></iron-media-query>
+        <div tabindex="6" class="container" wide-layout$="{{wide}}" on-tap="_next" on-KeyPress="_next">
+            <div class="button">
+                <div class="icon"></div>
+            </div>
         </div>
 
     </template>
     <script>
-        class MyDisplayHashtagAddBtn extends Polymer.mixinBehaviors([
+        class MyDisplayDealBtn extends new ReduxMixin(Polymer.mixinBehaviors([
             Polymer.AppLocalizeBehavior,
         ],
             Polymer.Element
-        ) {
+        )) {
             static get is() {
-                return 'display-hashtagadd-btn';
+                return 'display-deal-btn';
             }
             static get properties() {
                 return {
@@ -86,34 +100,37 @@ The following custom properties and mixins are available for styling:
                         notify: true,
                     },
                     /**
-                    * completeAccount represents true of the user
-                    * has a username, avatar and address
-                    * @type {Boolean}
+                    * PublicKey represents the user's public key
+                    * @type {String}
                     */
-                    completeAccount: {
-                        type: Boolean,
-                        value: true,
+                    publicKey: {
+                        type: String,
+                        statePath: 'publicKey',
                     },
                 };
             }
-
+            /**
+            * Fired on initial element load.
+            */
+            ready() {
+                super.ready();
+            }
             /**
             * Either go to the new here or new deal page depending if the user has a
             * complete acocunt.
             * @param {Object} event element clicked.
             */
-            _newHashtag(event) {
+            _next(event) {
                 if (event.keyCode === 13 || event.type == 'tap') {
-                    sessionStorage.setItem('origin', this.route.path);
-                    let storage = JSON.parse(localStorage.getItem('SwarmCity'));
-                    if (storage.keyStore && storage.keyStore.Crypto) {
-                        this.path = 'new-hashtag/';
+                    sessionStorage.setItem('hashtag', this.route.path.split('/')[2]);
+                    if (this.publicKey) {
+                        this.path = 'new-request/' + this.route.path.split('/')[2];
                     } else {
-                        this.path = 'new-hashtag/';
+                        this.path = 'new-here/';
                     }
                 }
             }
         }
-        window.customElements.define(MyDisplayHashtagAddBtn.is, MyDisplayHashtagAddBtn);
+        window.customElements.define(MyDisplayDealBtn.is, MyDisplayDealBtn);
     </script>
 </dom-module>

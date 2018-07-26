@@ -1,0 +1,54 @@
+<link rel="import" href="../../bower_components/polymer/polymer-element.html">
+
+<dom-module id="data-simpledeal">
+    <script>
+        class DataSimpledeal extends Polymer.Element {
+            static get is() {
+                return 'data-simpledeal';
+            }
+
+            /**
+            * Filter the hashtag object to return a formatted list of items the user is involved in
+            * @return {items} The array with items the user is involved in
+            * @argument {object} hashtag the current hashtag
+            * @argument {String} userAddress the user's address
+            * @argument {String} involved if true, return the items the user is involved with
+            */
+            getHashtagItems(hashtag, userAddress, involved) {
+                return new Promise((resolve, reject) => {
+                    let items = Object.values(hashtag.items)
+                        .filter((item) => {
+                            let isInvolved = false;
+                            if (item.replies) {
+                                for (let i = 0; i < item.replies.length; i++) {
+                                    if (item.replies[i].address == userAddress) {
+                                        isInvolved = true;
+                                    }
+                                }
+                            }
+                            if (item.seeker.address == userAddress) {
+                                isInvolved = true;
+                            }
+                            if (involved) {
+                                // only return items the user is involved with
+                                return isInvolved;
+                            } else {
+                                // only return items the user is not involved with
+                                return !isInvolved;
+                            }
+                        })
+                        .map((item) => {
+                            // format the item value to human readable amount
+                            item.value = item.value / 1e18;
+                            return item;
+                        })
+                        .sort((a, b) => {
+                            // sort the array by date, newest first
+                            return parseInt(b.dateTime) - parseInt(a.dateTime);
+                        });
+                    resolve(items);
+                });
+            }
+        } window.customElements.define(DataSimpledeal.is, DataSimpledeal);
+    </script>
+</dom-module>
