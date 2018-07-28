@@ -31,6 +31,17 @@
     <meta property="og:description" content="Swarm City is the first truly decentralized peer to peer sharing economy, enabled by the SWT token, running on the Ethereum blockchain."/>
     <script src='socket.io.js'></script>
     <script>
+      if (!localStorage.getItem('SwarmCity')) {
+        let storage = { // eslint-disable-line
+          user: {
+            language: 'en',
+            username: '',
+            location: '',
+            avatar: '[[importHref]]../../images/defaultavatar.png'},
+          keyStore: {},
+        };
+        localStorage.setItem('SwarmCity', JSON.stringify(storage));
+      }
       window.Polymer = {rootPath: '/'};
       if ('serviceWorker' in navigator) {
         window.addEventListener('load', function() {
