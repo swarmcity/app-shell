@@ -3,17 +3,28 @@
   "shell": "src/swarm-city.html",
   "sources": [
     "images/**/*",
-    "src/**/*"
+    "src/**/*",
+    "socket.io.js",
+    "_redirects",
+    "404.html",
+    "CNAME"
+  ],
+  "fragments": [
+    "src/redux-state.html",
+    "bower_components/polymer/polymer-element.html",
+    "bower_components/iron-media-query/iron-media-query.html",
+    "bower_components/iron-flex-layout/iron-flex-layout.html",
+    "bower_components/app-route/app-location.html",
+    "bower_components/app-localize-behavior/app-localize-behavior.html",
+    "bower_components/paper-input/paper-input.html",
+    "bower_components/paper-progress/paper-progress.html",
+    "bower_components/iron-image/iron-image.html"
   ],
   "extraDependencies": [
     "bower_components/webcomponentsjs/*.js",
     "!bower_components/webcomponentsjs/gulpfile.js",
-    "bower_components/**/*",
     "manifest.json",
-    "_redirects",
-    "404.html",
-    "socket.io.js",
-    "CNAME"
+    "src/data/webpack.min.js"
   ],
   "lint": {
     "rules": ["polymer-2"]
@@ -24,3 +35,5 @@
     }
   ]
 }
+
+
