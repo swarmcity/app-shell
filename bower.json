@@ -17,8 +17,13 @@
     "webcomponentsjs": "^2.0.3",
     "faffys-animated-pages": "^0.0.11",
     "iron-a11y-keys": "^2.1.2",
-    "polymer-redux": "^1.0.5",
-    "app-localize-behavior": "^2.0.2"
+    "polymer-redux": "1.0.3",
+    "app-localize-behavior": "^2.0.2",
+    "paper-input": "^2.2.3",
+    "iron-image": "^2.2.1",
+    "paper-checkbox": "^2.0.4",
+    "paper-progress": "^2.1.1",
+    "paper-slider": "^2.0.7"
   },
   "resolutions": {
     "polymer": "^2.0.0"

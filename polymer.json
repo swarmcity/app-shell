@@ -1,22 +1,19 @@
 {
   "entrypoint": "index.html",
   "shell": "src/swarm-city.html",
-  "fragments": [
-    "src/pages/page-welcome.html",
-    "src/my-view404.html"
-  ],
   "sources": [
     "images/**/*",
-    "src/**/*",
-    "_redirects",
-    "404.html",
-    "socket.io.js",
-    "CNAME"
+    "src/**/*"
   ],
   "extraDependencies": [
     "bower_components/webcomponentsjs/*.js",
     "!bower_components/webcomponentsjs/gulpfile.js",
-    "manifest.json"
+    "bower_components/**/*",
+    "manifest.json",
+    "_redirects",
+    "404.html",
+    "socket.io.js",
+    "CNAME"
   ],
   "lint": {
     "rules": ["polymer-2"]

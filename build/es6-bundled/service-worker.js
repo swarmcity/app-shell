@@ -37,7 +37,7 @@
 /* eslint-disable indent, no-unused-vars, no-multiple-empty-lines, max-nested-callbacks, space-before-function-paren, quotes, comma-spacing */
 'use strict';
 
-var precacheConfig = [["bower_components/webcomponentsjs/webcomponents-loader.js","6faaea1b73a1b28a47c737c013ae0dc6"],["index.html","23744be0422f62014dd6814abb8cd390"],["manifest.json","c9be285f428e41c0f2b3425c7cffbe5b"],["src/my-view404.html","bbf3cc4cfc53bdfdbe2fe4c89fda23c3"],["src/pages/page-welcome.html","c5a7ed8f39098b6a907d7f17151c137d"],["src/swarm-city.html","7b7dc25f9785dc3cb371e9f7a1b2e4ff"]];
+var precacheConfig = [["bower_components/webcomponentsjs/webcomponents-loader.js","6faaea1b73a1b28a47c737c013ae0dc6"],["index.html","23744be0422f62014dd6814abb8cd390"],["manifest.json","c9be285f428e41c0f2b3425c7cffbe5b"],["src/swarm-city.html","6a41bb2b8db6a09772a6d5d07034b7a6"]];
 var cacheName = 'sw-precache-v3--' + (self.registration ? self.registration.scope : '');
 
 
