@@ -1,0 +1,22 @@
+<html><head><link rel="import" href="../../bower_components/polymer/polymer-element.html"><link rel="import" href="../../bower_components/app-localize-behavior/app-localize-behavior.html"><link rel="import" href="../redux-state.html"><link rel="import" href="../data/data-transaction.html"><script src="../data/abi.js"></script><script src="../data/webpack.min.js"></script></head><body><dom-module id="display-complete-transaction"><template><data-transaction id="transaction"></data-transaction><template is="dom-if" if="{{debug}}"><p style="margin-top:100px"></p><pre style="background-color:black; color:lime">            ==========================================================================
+            Test DIV To show all TX values (this is for testing only)
+            ==========================================================================
+
+            ADDRESS: {{address}}
+            TO ADDRESS: {{toAddress}}
+            AMOUNT TO SEND : {{amountToSend}} SWT
+            NONCE: {{nonce}}
+            GAS PRICE: {{gasPrice}}
+
+            -------------------------------------------------------------------------
+            PRIVATE KEY: {{privateKey}}
+            -------------------------------------------------------------------------
+            RAW TX: {{rawTx}}
+            -------------------------------------------------------------------------
+            SIGNED TX: {{signedTx}}
+            -------------------------------------------------------------------------
+            STATUS: {{status}}
+            -------------------------------------------------------------------------
+            ERROR: {{error}}
+
+        </pre><p></p></template></template><script>class DisplayCompleteTransaction extends(new ReduxMixin(Polymer.mixinBehaviors([Polymer.AppLocalizeBehavior],Polymer.Element))){static get is(){return"display-complete-transaction"}static get actions(){return Object.assign({BROADCAST:function(broadcast){return{type:"BROADCAST",broadcast:broadcast}},PUBLICKEY:function(publicKey){return{type:"PUBLICKEY",publicKey:publicKey}}})}static get properties(){return{debug:{type:Boolean,value:!1},send:{type:String},address:{type:String,statePath:"publicKey"},toAddress:{type:String,statePath:"toAddress"},amountToSend:{type:Number,statePath:"amountToSend"},nonce:{type:Number,statePath:"nonce"},publicKey:{type:String,statePath:"publicKey"},gasPrice:{type:Number,statePath:"gasPrice"},privateKey:{type:String,observer:"_sign",notify:!0},rawTx:{type:String,notify:!0,reflectToAtribute:!0},signedTx:{type:String,notify:!0,reflectToAtribute:!0},status:{type:String,value:"UNSENT",notify:!0,reflectToAtribute:!0},error:{type:String,notify:!0,reflectToAtribute:!0},broadcast:{type:String},path:{type:String,reflectToAttribute:!0,notify:!0}}}_sign(){if(this.privateKey){let swtContract=new webpack.Contract(abi.miniMeToken.abi,"0x0ADBc89464Cb7fa752ADCf3533514949A2547589"),weiAmount=1e18*parseFloat(this.amountToSend),txData=swtContract.methods.transfer(this.toAddress,weiAmount).encodeABI();const txParams={nonce:this._toHex(this.nonce),gasPrice:this._toHex(21e9),gasLimit:this._toHex(2e5),to:"0x0ADBc89464Cb7fa752ADCf3533514949A2547589",from:this.address,data:txData,chainId:42};this.$.transaction.signRawTx(txParams,this.privateKey).then(serializedTx=>{this.dispatch("BROADCAST","0x"+serializedTx.toString("hex"));this.path="transaction-processing/"}).catch(err=>{this.error=err})}}_toHex(dec){let hex=(+dec).toString(16),result="000000".substr(0,6-hex.length)+hex;return"0x"+result}}window.customElements.define(DisplayCompleteTransaction.is,DisplayCompleteTransaction);</script></dom-module></body></html>
